@@ -1,0 +1,28 @@
+  Log.d(TAG, "onCreate: Start");
+        ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
+
+            HashMap<String,String> map;
+            map = new HashMap<>();
+            map.put("NewsIntroItem","Some text into news case");
+            map.put("TitleItem","First New");
+            arrayList.add(map);
+
+            map = new HashMap<>();
+            map.put("NewsIntroItem","Some text into news case");
+            map.put("TitleItem","Second New");
+            arrayList.add(map);
+
+            map = new HashMap<>();
+            map.put("NewsIntroItem","Some text into news case");
+            map.put("TitleItem","Third New");
+            arrayList.add(map);
+
+            map = new HashMap<>();
+            map.put("NewsIntroItem","Some text into news case");
+            map.put("TitleItem","Forth New");
+            arrayList.add(map);
+
+        SimpleAdapter adapter=new SimpleAdapter(news.this,arrayList,R.layout.newslistitem,new String[]{"NewsIntroItem","TitleItem"},new int[]{R.id.NewsIntroItem,R.id.TitleItem});
+        listView = findViewById(R.id.NewsList);
+        listView.setAdapter(adapter);
+        Log.d(TAG, "onCreate: adapter create!");
