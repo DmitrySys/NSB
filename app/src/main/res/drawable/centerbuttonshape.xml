@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
+
+    <solid
+        android:color="@color/ActionBarButtonBorder"
+        />
+    <padding
+        android:left="4dp"
+        android:top="3dp"
+        android:right="0dp"
+        android:bottom="0dp"
+        />
+    <size
+        android:width="90dp"
+        android:height="32dp"
+        />
+    <stroke
+        android:width="4dp"
+        android:color="@color/ActionBarButtonBorder"
+        />
+</shape>

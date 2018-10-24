@@ -1,0 +1,20 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="newsListItemTextStyle" parent="@android:style/Widget.TextView">
+        <item name="android:typeface">monospace</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowRadius">2.</item>
+        <item name="android:shadowDx">4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:color"></item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">12dp</item>
+    </style>
+</resources>
