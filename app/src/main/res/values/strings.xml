@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">JPlayer</string>
+    <string name="app_name">Бурлинская газета</string>
     <string name="ActionBarNewsButton">News</string>
     <string name="ActionbarProfileButton">Profile</string>
     <string name="title_activity_login">Sign in</string>

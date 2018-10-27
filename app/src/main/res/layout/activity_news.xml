@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipe_update"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#cacaca">
     <FrameLayout
         android:id="@+id/frame"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="#ffffff">
-        <SearchView
+        android:background="@color/listitemcorner">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_update"
             android:layout_width="match_parent"
-            android:layout_height="28dp"
+            android:layout_height="match_parent">
+            <ListView
+                android:id="@+id/NewsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@null"
+                android:dividerHeight="10.0sp"
+                android:layoutAnimation="@anim/list_layout_controller"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+        <FrameLayout
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             >
-        </SearchView>
-        <ListView
-            android:id="@+id/NewsList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="10.0sp"
-            android:layoutAnimation="@anim/list_layout_controller"
-            >
-        </ListView>
-            <LinearLayout
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#3144d2">
+
+            </View>
+        </FrameLayout>
+        <LinearLayout
+            android:id="@+id/buttons"
                 android:layout_width="match_parent"
                 android:layout_gravity="bottom"
                 android:layout_height="40dp"
@@ -42,7 +53,7 @@
                     android:textSize="14sp"
                     android:textColor="@color/white"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:background="@drawable/buttonshape"
+                    android:background="@drawable/centerbuttonshape"
                     />
                 <Button
                     android:id="@+id/searchButton"
@@ -54,8 +65,8 @@
                     android:textSize="14sp"
                     android:textColor="@color/white"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:background="@drawable/centerbuttonshape">
-                </Button>
+                    android:background="@drawable/centerbuttonshape"
+                    />
                 <Button
                     android:id="@+id/forumButton"
                     android:layout_weight="1"
@@ -78,8 +89,8 @@
                     android:textSize="14sp"
                     android:textColor="@color/white"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:background="@drawable/profilebuttonshape"
+                    android:background="@drawable/centerbuttonshape"
                     />
             </LinearLayout>
     </FrameLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+</FrameLayout>

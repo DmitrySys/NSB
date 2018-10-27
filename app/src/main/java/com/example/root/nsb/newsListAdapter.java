@@ -1,6 +1,7 @@
 package com.example.root.nsb;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -37,9 +38,10 @@ public class newsListAdapter extends BaseAdapter {
            convertView=layoutInflater.inflate(R.layout.newslistitem,parent,false);
         }
             _newsCh bufObj = getItem(position);
+            byte[] image=bufObj.getImg();
             ((TextView) convertView.findViewById(R.id.date)).setText(bufObj.getDate());
             ((TextView) convertView.findViewById(R.id.TitleItem)).setText(bufObj.getTitle());
-            ((ImageView) convertView.findViewById(R.id.ImageItem)).setImageBitmap(bufObj.getImg());
+            ((ImageView) convertView.findViewById(R.id.ImageItem)).setImageBitmap(BitmapFactory.decodeByteArray(image , 0,image.length));
             ((TextView) convertView.findViewById(R.id.NewsIntroItem)).setText(bufObj.getIntro());
             return convertView;
     }
