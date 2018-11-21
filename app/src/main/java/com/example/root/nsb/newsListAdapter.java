@@ -42,7 +42,8 @@ public class newsListAdapter extends BaseAdapter {
             ((TextView) convertView.findViewById(R.id.date)).setText(bufObj.getDate());
             ((TextView) convertView.findViewById(R.id.TitleItem)).setText(bufObj.getTitle());
             ((ImageView) convertView.findViewById(R.id.ImageItem)).setImageBitmap(BitmapFactory.decodeByteArray(image , 0,image.length));
-            ((TextView) convertView.findViewById(R.id.NewsIntroItem)).setText(bufObj.getIntro());
+            ((TextView) convertView.findViewById(R.id.NewsIntroItem)).setText("     "+bufObj.getIntro());
+            ((TextView) convertView.findViewById(R.id.category)).setText(bufObj.getCategory());
             return convertView;
     }
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Бурлинская газета</string>
-    <string name="ActionBarNewsButton">News</string>
+    <string name="ActionBarNewsButton">Новости</string>
+    <string name="ActionBarCategoryButton">Категории</string>
     <string name="ActionbarProfileButton">Profile</string>
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
@@ -15,4 +16,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

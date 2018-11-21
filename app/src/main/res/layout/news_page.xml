@@ -9,27 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/news_page_backButton"
-                android:layout_width="48dp"
-                android:layout_height="match_parent" />
-            <TextView
-                android:id="@+id/news_page_Title"
-                android:textSize="32dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:background="@drawable/actionbar"
-                android:layout_alignParentRight="true"
-                />
-        </RelativeLayout>
+
         <TextView
             android:id="@+id/news_page_preIntro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textSize="24dp"/>
         <ImageView
             android:id="@+id/news_page_ImageSwitcher"
             android:layout_width="match_parent"
@@ -40,6 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="#000"
+            android:layout_marginRight="6dp"
+            android:layout_marginLeft="6dp"
+            android:textSize="18dp"
             />
     </LinearLayout>
 </ScrollView>
