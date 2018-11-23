@@ -3,9 +3,8 @@
             <set android:ordering="together">
                 <translate
                     android:duration="2000"
-                    android:fromYDelta="-100%"
                     android:fillAfter="false"
-                    android:toYDelta="0%"
-                    android:interpolator="@android:anim/overshoot_interpolator"/>
+                    android:toYDelta="100%"
+                    android:interpolator="@android:anim/decelerate_interpolator"/>
             </set>
 </set>
