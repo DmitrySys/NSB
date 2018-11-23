@@ -1,55 +1,63 @@
 package com.example.root.nsb;
 
-
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.FragmentManager;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.transition.*;
+import android.transition.Transition;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import java.io.IOException;
+import java.io.InputStream;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 
-public class news extends Activity implements onSomeEventListener {
-    TextView TitleBar;
+
+
+public class news extends Activity {
     private ListView listView;
     private static final  String TAG = "MyApp";
-    //Booleans
-    private boolean isAnimationNowLoadScreen=true;
-    //
-    FrameLayout button_layout;
     //
     Context context = news.this;
     //Views
-    View frame;
     ViewGroup start_scene;
     //endViews
-    //
-    FragmentManager fragmentManager = getFragmentManager();
-    news_list newsList = new news_list();
-    CategoryFragment categoryFragment = new CategoryFragment();
-    NewsPageFragment newsPageFragment = new NewsPageFragment();
-    //
     CacheManager managerCashe;
+    //
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     //
     private Animation animation;
     //
@@ -59,65 +67,12 @@ public class news extends Activity implements onSomeEventListener {
     private Button searchButton;
     private Button forumButton;
     private Button profileButton;
-    private Button categoryButton;
-    private ViewGroup buttons;
-    //
     private newsListAdapter listAdapter;
     private ArrayList<_newsCh> GL_arrayList_TO_NEWS;
     //endButton
-
-    private void listTransitionToNews(int position)
-    {
-        start_load_screen_animation_IN();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment,newsPageFragment)
-                .addToBackStack(null)
-                .commit();
-        new load_newspage().execute(GL_arrayList_TO_NEWS.get(position));
-
-    }
-
-    private int setAdapterToNewsList(final ArrayList<_newsCh> arrayList)
-    {
-        if (arrayList != null)
-        {
-            Log.d(TAG,"webReader.onPostExecute: arraylist!=null");
-            listAdapter = new newsListAdapter(news.this,arrayList);
-            GL_arrayList_TO_NEWS=new ArrayList<>();
-            GL_arrayList_TO_NEWS=arrayList;
-            newsList.setContext(context);
-            listView = newsList.getListView(listAdapter);
-
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.d(TAG,"onClickListView listener: pressed:"+position);
-                    listTransitionToNews(position);
-                }
-            });
-
-        }
-        return 0;
-    }
-    protected void toCategory()
-    {
-        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.fragment,categoryFragment);
-        fTrans.addToBackStack(null);
-        fTrans.commit();
-    }
-    protected void toNews()
-    {
-        if (getFragmentManager().getBackStackEntryCount() > 0 ){
-            getFragmentManager().popBackStack();
-            newsList.setNewAdapter(GL_arrayList_TO_NEWS);
-        }
-    }
-    //Overrides methods
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_news);
         Log.d(TAG, "onCreate: Start");
         //Button
@@ -125,60 +80,151 @@ public class news extends Activity implements onSomeEventListener {
         searchButton=findViewById(R.id.searchButton);
         forumButton=findViewById(R.id.forumButton);
         profileButton=findViewById(R.id.profileButton);
-        categoryButton=findViewById(R.id.categoryButton);
-        buttons= (ViewGroup) findViewById(R.id.buttons);
-        button_layout=findViewById(R.id.buttons);
         //endButton
-        TitleBar = findViewById(R.id.TitleText);
-        TitleBar.setText(R.string.ActionBarNewsButton);
-        newsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toNews();
-            }
-        });
-        categoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toCategory();
-                TitleBar.setText(R.string.ActionBarCategoryButton);
-            }
-        });
         //Swipe update
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_update);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
+        {
+            @Override
+            public void onRefresh()
+            {
+                new webReader().execute();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 4000);
+            }
+        });
+        mSwipeRefreshLayout.setColorSchemeColors(
+                Color.RED, Color.GREEN, Color.BLUE, Color.CYAN);
         //end swipe update
         //Start this Activity
+
+        start_scene = (ViewGroup) findViewById(R.id.start);
+        start_scene.setVisibility(View.VISIBLE);
         showButtons(View.GONE);
-        frame = findViewById(R.id.frame);
-        start_load_screen_animation_IN();
+
         new start_load_cashe().execute();// Start blue scene
         //ensStart this Activity
+        //
         Log.d(TAG,"onCreate: Successful");
     }
-
-    @Override
-    public void someEvent(String s) {
-        if(s.equals("Waiting"))new waitingAnimationFinish().execute();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0 ){
-            getFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
+    public class webReader extends AsyncTask<Void,Void,Void> {
+        private ArrayList<_newsCh> arrayList=new ArrayList<>();
+        @Override
+        protected Void doInBackground(Void... params) {
+            Log.d(TAG,"webReader: Start");
+            String url = "http://moyaokruga.ru/bur-gaz/";
+            Document document=null;
+            try
+            {
+                document = Jsoup.connect(url).get();
+                siteReader sR= new siteReader(document);
+                _newsCh array = new _newsCh();
+                arrayList=array.pullData(sR.readTexts("div.txt-articles > header > h3 > a")
+                        , sR.readTexts("div.txt-articles > p")
+                        , sR.readHref("div.txt-articles > header > h3 > a")
+                        ,array.getArrayByteArrayFromBitmap(sR.readImageToBitmap("http://moyaokruga.ru","div.news-container > article.articles.clearfix > a > img"))
+                        ,sR.readTexts("div.txt-articles > header > p> a")
+                        ,sR.readTexts("div.txt-articles > header > p >time")
+                        );
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            Log.d(TAG,"webReader.onPostExecute: Start ");
+            new putCashe().execute(arrayList);
+            super.onPostExecute(result);
+            setAdapterToNewsList(arrayList);
+            Log.d(TAG,"webReader.onPostExecute: Successful ");
         }
     }
-    //
-    //UI манипуляции
-
-    //Get int b: GONE,VISIBLE.
-    private void showButtons(int b)
+    private void listTransitionToNews(int position)
     {
-        button_layout.setVisibility(b);
+        new load_newspage().execute(GL_arrayList_TO_NEWS.get(position));
+        ViewGroup currentScene = (ViewGroup) findViewById(R.id.frame);
+        Scene scene = Scene.getSceneForLayout(currentScene,R.layout.news_page,news.this);
+        TransitionSet set=new TransitionSet()
+                .addTransition(new Fade())
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                .setInterpolator(new AccelerateInterpolator());
+        TransitionManager.go(scene,set);
+        gestureDetector = initGestureDetector();
+        View view = findViewById(R.id.news_page);
+        view.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+    }
+    private void NewsTransitionToList()
+    {
+        ViewGroup currentScene = (ViewGroup) findViewById(R.id.news_page);
+        Scene scene = new Scene((ViewGroup) findViewById(R.id.frame));
+        TransitionSet set=new TransitionSet()
+                .addTransition(new Fade())
+                .addTransition(new ChangeBounds())
+                .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                .setInterpolator(new AccelerateInterpolator());
+        TransitionManager.go(scene,set);
+        start_scene.setVisibility(View.VISIBLE);
+
+        setAdapterToNewsList(GL_arrayList_TO_NEWS);
     }
 
-    //
-    // AsyncTasks
+    private GestureDetector initGestureDetector() {
+        return new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+
+            private swipeDetector detector = new swipeDetector();
+
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                                   float velocityY) {
+                try {
+                    if (detector.isSwipeDown(e1, e2, velocityY)) {
+                        return false;
+                    } else if (detector.isSwipeUp(e1, e2, velocityY)) {
+                    }else if (detector.isSwipeLeft(e1, e2, velocityX)) {
+                    } else if (detector.isSwipeRight(e1, e2, velocityX)) {
+                        NewsTransitionToList();
+                    }
+                } catch (Exception e) {} //for now, ignore
+                return false;
+            }
+
+            private void showToast(String phrase){
+                Toast.makeText(getApplicationContext(), phrase, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private int setAdapterToNewsList(final ArrayList<_newsCh> arrayList)
+    {
+        if (arrayList != null)
+        {
+            Log.d(TAG,"webReader.onPostExecute: arraylist!=null");
+            //   listAdapter.notifyDataSetChanged();
+            listAdapter = new newsListAdapter(news.this,arrayList);
+            GL_arrayList_TO_NEWS=new ArrayList<>();
+            GL_arrayList_TO_NEWS=arrayList;
+            listView = findViewById(R.id.NewsList);
+            listView.setAdapter(listAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.d(TAG,"onClickListView listener: pressed:"+position);
+                    listTransitionToNews(position);
+                }
+            });
+        }
+        return 0;
+    }
     public class putCashe extends AsyncTask<ArrayList<_newsCh>,Void,Void>
     {
         @Override
@@ -195,7 +241,6 @@ public class news extends Activity implements onSomeEventListener {
             return null;
         }
     }
-
     public class getCashe extends AsyncTask<String,Void,Void>
     {
         private ArrayList<_newsCh> arrayList=new ArrayList<>();
@@ -203,7 +248,7 @@ public class news extends Activity implements onSomeEventListener {
         protected Void doInBackground(String... filenames)
         {
             if(managerCashe.check_cash())
-                newsList.webRead();
+                new webReader().execute();
             return  null;
         }
         protected void onPostExecute(Void result) {
@@ -212,7 +257,6 @@ public class news extends Activity implements onSomeEventListener {
             Log.d(TAG,"getCashe.onPostExecute: Successful ");
         }
     }
-
     public class start_load_cashe extends AsyncTask<Void,Void,ArrayList<_newsCh>>
     {
         @Override
@@ -220,24 +264,37 @@ public class news extends Activity implements onSomeEventListener {
         {
             managerCashe = new CacheManager(context, "listCashe", 52428800L);
             if(managerCashe.check_cash()){return managerCashe.startScreenRead();}
-            else return null;
+            else {new webReader().execute();return null;}
         }
         @Override
         protected void onPostExecute(ArrayList<_newsCh> result) {
+            ViewGroup buttons = (ViewGroup) findViewById(R.id.buttons);
+            animation = AnimationUtils.loadAnimation(news.this,R.anim.scale_animator);
+            start_scene.startAnimation(animation);
+            Animation.AnimationListener animationListener = new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                start_scene.setVisibility(View.GONE);
+                showButtons(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            };
+            animation.setAnimationListener(animationListener);
             if(result!=null)
             {
-                fragmentManager
-                        .beginTransaction()
-                        .add(R.id.fragment, newsList,"NewsList")
-                        .commit();
-                GL_arrayList_TO_NEWS = result;
-                new waitingAnimationFinish().execute();
+                setAdapterToNewsList(result);
             }
-            else newsList.webRead();
         }
     }
-    //
-
     public class load_newspage extends AsyncTask<_newsCh,Void,newsPage>
     {
         newsPage page;
@@ -263,111 +320,35 @@ public class news extends Activity implements onSomeEventListener {
             {
                 e.printStackTrace();
             }
-            return page;
-        }
+                return page;
+            }
 
         @Override
         protected void onPostExecute(newsPage page) {
             super.onPostExecute(page);
-            newsPageFragment.pageApapter(page);
-            start_load_screen_animation_OUT();
-            TitleBar.setText(page.getTitle());
+            pageApapter(page);
 
         }
     }
-
-    protected class waitingAnimationFinish extends AsyncTask<Void,Void,Void>
+    private void showButtons(int b)
     {
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            start_load_screen_animation_OUT();
-            setAdapterToNewsList(GL_arrayList_TO_NEWS);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            while (isAnimationNowLoadScreen);
-            return null;
-        }
+        newsButton.setVisibility(b);
+        searchButton.setVisibility(b);
+        forumButton.setVisibility(b);
+        profileButton.setVisibility(b);
     }
-    //
-
-    // Animations
-    protected void start_load_screen_animation_IN()
+    protected void pageApapter(newsPage page)
     {
-        isAnimationNowLoadScreen=true;
-        frame.setBackgroundColor(getResources().getColor(R.color.blueActionBar));
-        start_scene = (ViewGroup) findViewById(R.id.view_frame);
-        start_scene.setVisibility(View.VISIBLE);
-        start_scene = findViewById(R.id.load_icon);
-        animation = AnimationUtils.loadAnimation(context,R.anim.fadein);
-        start_scene.startAnimation(animation);
-        Animation.AnimationListener animationListener = new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                isAnimationNowLoadScreen=false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        };
-        animation.setAnimationListener(animationListener);
+        TextView title = findViewById(R.id.news_page_Title);
+        TextView preIntro = findViewById(R.id.news_page_preIntro);
+        TextView intro = findViewById(R.id.news_page_Intro);
+        ImageView imageSwitcher = findViewById(R.id.news_page_ImageSwitcher);
+        title.setText(page.getTitle());
+        preIntro.setText(page.getPreIntro());
+        intro.setText(page.getIntro());
+        Bitmap img = page.getImglist()[0];
+        imageSwitcher.setImageBitmap(img);
     }
-    protected void start_load_screen_animation_OUT()
-    {
-        frame.setBackgroundColor(getResources().getColor(R.color.white));
-        start_scene = (ViewGroup) findViewById(R.id.view_frame);
-        animation = AnimationUtils.loadAnimation(news.this,R.anim.fadeout);
-        start_scene.startAnimation(animation);
-        Animation.AnimationListener animationListener = new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                isAnimationNowLoadScreen=true;
-            }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                start_scene.setVisibility(View.GONE);
-                showButtons(View.VISIBLE);
-                isAnimationNowLoadScreen=false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        };
-        animation.setAnimationListener(animationListener);
-    }
-    private void start_circle_icon_rotate()
-    {
-        isAnimationNowLoadScreen=true;
-        View circle_icon = findViewById(R.id.load_icon_back_text);
-        animation = AnimationUtils.loadAnimation(context,R.anim.rotate_icon);
-        circle_icon.startAnimation(animation);
-        Animation.AnimationListener animationListener = new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                isAnimationNowLoadScreen=false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        };
-        animation.setAnimationListener(animationListener);
-    }
-    //
 }
 
