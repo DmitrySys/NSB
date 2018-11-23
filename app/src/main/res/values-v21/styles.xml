@@ -7,5 +7,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@color/ActionBarButtonBorder</item>
+        <item name="android:textColorPrimary">@android:color/background_dark</item>
     </style>
 </resources>

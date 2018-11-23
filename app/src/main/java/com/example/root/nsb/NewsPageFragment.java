@@ -15,34 +15,27 @@ public class NewsPageFragment extends Fragment {
     TextView preIntro;
     TextView intro;
     ImageView imageSwitcher;
-
-        public NewsPageFragment() {
-        }
-        public static news_list newInstance(String param) {
-            news_list fragment = new news_list();
-            return fragment;
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView =
-                    inflater.inflate(R.layout.news_page, container, false);
-            preIntro =rootView.findViewById(R.id.news_page_preIntro);
-            intro = rootView.findViewById(R.id.news_page_Intro);
-            imageSwitcher = rootView.findViewById(R.id.news_page_ImageSwitcher);
-            return rootView;
-        }
+    newsPage instansePage;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState)
+    {
+        View rootView =
+                inflater.inflate(R.layout.news_page, container, false);
+        preIntro =rootView.findViewById(R.id.news_page_preIntro);
+        intro = rootView.findViewById(R.id.news_page_Intro);
+        imageSwitcher = rootView.findViewById(R.id.news_page_ImageSwitcher);
+        if(instansePage!=null)
+            pageApapter(instansePage);
+        return rootView;
+    }
     protected void pageApapter(newsPage page)
     {
         preIntro.setText(page.getPreIntro());
         intro.setText(page.getIntro());
         Bitmap img = page.getImglist()[0];
         imageSwitcher.setImageBitmap(img);
+        instansePage=page;
+
     }
     private GestureDetector initGestureDetector() {
         return new GestureDetector(new GestureDetector.SimpleOnGestureListener() {

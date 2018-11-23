@@ -9,6 +9,5 @@
             android:layout_height="wrap_content"
             android:divider="@null"
             android:dividerHeight="10.0sp"
-            android:layoutAnimation="@anim/list_layout_controller"
             android:background="#c1c1c1"/>
     </android.support.v4.widget.SwipeRefreshLayout>

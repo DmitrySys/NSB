@@ -11,36 +11,88 @@
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:background="@color/listitemcorner">
-
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_update"
+        <!-- Title Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:background="@color/ActionBarButtonBorder">
+                <TextView
+                    android:id="@+id/TitleText"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:textColor="@color/white"
+                    android:textSize="28dp"
+                    android:layout_marginLeft="12dp"
+                    />
+            </FrameLayout>
+            <RelativeLayout
+                android:id="@+id/fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </RelativeLayout>
+        </LinearLayout>
+        <!-- Main Fragment Frame -->
+        <FrameLayout
+            android:id="@+id/view_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            >
+            <RelativeLayout
+                android:id="@+id/load_screen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <View
+                    android:id="@+id/load_screen_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/ActionBarButtonBorder"
+                    />
+                <RelativeLayout
+                    android:id="@+id/load_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+                    <View
+                        android:layout_width="512px"
+                        android:layout_height="512px"
+                        android:background="@drawable/icon_background"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        />
+                    <View
+                        android:id="@+id/load_icon_back_text"
+                        android:layout_width="512px"
+                        android:layout_height="512px"
+                        android:background="@drawable/icon_back_text"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        />
+                    <View
+                        android:id="@+id/load_icon_front_img"
+                        android:layout_width="512px"
+                        android:layout_height="512px"
+                        android:background="@drawable/icon"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        />
+                </RelativeLayout>
+            </RelativeLayout>
+        </FrameLayout>
+        <!-- Action Bar -->
+        <FrameLayout
+            android:id="@+id/buttons"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <ListView
-                android:id="@+id/NewsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="@null"
-                android:dividerHeight="10.0sp"
-                android:layoutAnimation="@anim/list_layout_controller"/>
-        </android.support.v4.widget.SwipeRefreshLayout>
-        <FrameLayout
-            android:id="@+id/start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#3144d2">
-
-            </View>
-        </FrameLayout>
-        <LinearLayout
-            android:id="@+id/buttons"
+            <!-- Buttons -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_gravity="bottom"
-                android:layout_height="40dp"
+                android:layout_height="45dp"
                 android:orientation="horizontal"
                 >
                 <Button
@@ -48,23 +100,19 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:text="@string/ActionBarNewsButton"
-                    android:typeface="monospace"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
-                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:background="@drawable/centerbuttonshape"
                     />
+                <Button
+                    android:id="@+id/categoryButton"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/centerbuttonshape" />
                 <Button
                     android:id="@+id/searchButton"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:text="Search"
-                    android:typeface="monospace"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
-                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:background="@drawable/centerbuttonshape"
                     />
                 <Button
@@ -72,11 +120,6 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:text="Forum"
-                    android:typeface="monospace"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
-                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:background="@drawable/centerbuttonshape"
                     />
                 <Button
@@ -84,13 +127,78 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:text="@string/ActionbarProfileButton"
-                    android:typeface="monospace"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
-                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:background="@drawable/centerbuttonshape"
                     />
             </LinearLayout>
+            <!-- Icons -->
+            <LinearLayout
+                android:id="@+id/buttons_icon"
+                android:layout_width="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_height="45dp"
+                android:orientation="horizontal"
+                >
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/home"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/category"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/search"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/home"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1">
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/user"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"/>
+                </RelativeLayout>
+            </LinearLayout>
+        </FrameLayout>
     </FrameLayout>
 </FrameLayout>

@@ -48,15 +48,15 @@ public class news_list extends Fragment {
         listView = rootView.findViewById(R.id.NewsList);
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_update);
         swipeRefreshNewsSet();
+        context=getActivity();
+        if(GL_arrayList_TO_NEWS!=null)
+            setNewAdapter(GL_arrayList_TO_NEWS);
         return rootView;
     }
-    public ListView getListView(newsListAdapter listAdapter)
+    public ListView setListView(newsListAdapter listAdapter,ArrayList<_newsCh> arrayList)
     {
         listView.setAdapter(listAdapter);
-        return listView;
-    }
-    public ListView getListView()
-    {
+        GL_arrayList_TO_NEWS=arrayList;
         return listView;
     }
     public  SwipeRefreshLayout getSwipeRefreshLayout()
@@ -77,7 +77,8 @@ public class news_list extends Fragment {
         mSwipeRefreshLayout.setColorSchemeColors(
                 Color.RED, Color.GREEN, Color.BLUE, Color.CYAN);
     }
-    public class webReader extends AsyncTask<Void,Void,Void> {
+
+    private class webReader extends AsyncTask<Void,Void,Void> {
         private ArrayList<_newsCh> arrayList=new ArrayList<>();
         @Override
         protected Void doInBackground(Void... params) {
@@ -104,8 +105,9 @@ public class news_list extends Fragment {
         }
         @Override
         protected void onPostExecute(Void result) {
-            new putCashe().execute(arrayList);
             super.onPostExecute(result);
+            setNewAdapter(arrayList);
+            new putCashe().execute(arrayList);
             GL_arrayList_TO_NEWS=arrayList;
             if(swipe)
             {
@@ -117,13 +119,14 @@ public class news_list extends Fragment {
             }
         }
     }
-    public void webRead(){new webReader().execute();};
+
+    public void webRead(){new webReader().execute();}
+
     private class putCashe extends AsyncTask<ArrayList<_newsCh>,Void,Void>
     {
         @Override
         protected Void doInBackground(ArrayList<_newsCh>... arrayLists) {
             for(ArrayList<_newsCh> item:arrayLists) {
-                ArrayList<_newsCh> ArrayList = item;
                 managerCashe = new CacheManager(context, "listCashe", 52428800L);
                 int i = 0;
                 for (_newsCh Item:item) {
@@ -134,7 +137,9 @@ public class news_list extends Fragment {
             return null;
         }
     }
+
     public void setContext(Context context){this.context=context;}
+
     public void setNewAdapter (ArrayList<_newsCh> listnews)
     {
         listAdapter = new newsListAdapter(context,listnews);
