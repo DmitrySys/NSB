@@ -42,6 +42,7 @@
             android:layout_height="match_parent"
             android:visibility="gone"
             >
+            <!-- Load screen -->
             <RelativeLayout
                 android:id="@+id/load_screen"
                 android:layout_width="match_parent"
@@ -144,6 +145,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1">
                     <ImageView
+                        android:id="@+id/home_icon"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/home"
@@ -156,6 +158,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1">
                     <ImageView
+                        android:id="@+id/category_icon"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/category"
@@ -168,6 +171,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1">
                     <ImageView
+                        android:id="@+id/search_icon"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/search"
@@ -180,6 +184,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1">
                     <ImageView
+                        android:id="@+id/forum_icon"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/home"
@@ -192,6 +197,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_weight="1">
                     <ImageView
+                        android:id="@+id/profile_icon"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@drawable/user"

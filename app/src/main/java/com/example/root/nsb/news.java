@@ -5,9 +5,12 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.FragmentManager;
+import android.support.annotation.DrawableRes;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.View;
@@ -18,6 +21,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -34,8 +39,9 @@ public class news extends Activity implements onSomeEventListener {
     private static final  String TAG = "MyApp";
     //Booleans
     private boolean isAnimationNowLoadScreen=true;
-    //
+    //Layouts
     FrameLayout button_layout;
+    LinearLayout iconsLayout;
     //
     Context context = news.this;
     //Views
@@ -52,65 +58,54 @@ public class news extends Activity implements onSomeEventListener {
     //
     private Animation animation;
     //
+    private int  currentFragment;
     GestureDetector gestureDetector;
     //Button
+    private ImageView homeIcon;
+    private ImageView categoryIcon;
+    private ImageView searchIcon;
+    private ImageView forumIcon;
+    private ImageView profileIcon;
     private Button newsButton;
     private Button searchButton;
     private Button forumButton;
     private Button profileButton;
     private Button categoryButton;
-    private ViewGroup buttons;
     //
-    private newsListAdapter listAdapter;
     private ArrayList<_newsCh> GL_arrayList_TO_NEWS;
     //endButton
 
+    //Transitions
     private void listTransitionToNews(int position)
     {
         start_load_screen_animation_IN();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment,newsPageFragment)
-                .addToBackStack(null)
-                .commit();
+        fragmentsManager(15);
         new load_newspage().execute(GL_arrayList_TO_NEWS.get(position));
 
     }
 
-    private int setAdapterToNewsList(final ArrayList<_newsCh> arrayList)
+    //End Transitions
+    private int createNewsList(final ArrayList<_newsCh> arrayList)
     {
         if (arrayList != null)
         {
-            Log.d(TAG,"webReader.onPostExecute: arraylist!=null");
-            listAdapter = new newsListAdapter(news.this,arrayList);
             GL_arrayList_TO_NEWS=new ArrayList<>();
             GL_arrayList_TO_NEWS=arrayList;
             newsList.setContext(context);
-            listView = newsList.setListView(listAdapter,arrayList);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.d(TAG,"onClickListView listener: pressed:"+position);
-                    listTransitionToNews(position);
-                }
-            });
+            listView = newsList.setListView(arrayList);
 
         }
         return 0;
     }
-    protected void toCategory()
-    {
-        FragmentTransaction fTrans = getFragmentManager().beginTransaction();
-        fTrans.replace(R.id.fragment,categoryFragment);
-        fTrans.addToBackStack(null);
-        fTrans.commit();
-    }
-    protected void toNews()
-    {
-        if (getFragmentManager().getBackStackEntryCount() > 0 ){
-            getFragmentManager().popBackStack();
-        }
-    }
     //Overrides methods
+    @Override
+    public void setTitleText(String name,int resid) {
+        if(name!=null)
+            TitleBar.setText(name);
+        else
+           if(resid!=0)TitleBar.setText(resid);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,26 +118,21 @@ public class news extends Activity implements onSomeEventListener {
         forumButton=findViewById(R.id.forumButton);
         profileButton=findViewById(R.id.profileButton);
         categoryButton=findViewById(R.id.categoryButton);
-        buttons= (ViewGroup) findViewById(R.id.buttons);
         button_layout=findViewById(R.id.buttons);
+        iconsLayout=findViewById(R.id.buttons_icon);
+        //Icons
+        homeIcon=findViewById(R.id.home_icon);
+        categoryIcon=findViewById(R.id.category_icon);
+        searchIcon=findViewById(R.id.search_icon);
+        forumIcon=findViewById(R.id.forum_icon);
+        profileIcon=findViewById(R.id.profile_icon);
+        //endIcons
         //endButton
         TitleBar = findViewById(R.id.TitleText);
         TitleBar.setText(R.string.ActionBarNewsButton);
-        newsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toNews();
-            }
-        });
-        categoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toCategory();
-                TitleBar.setText(R.string.ActionBarCategoryButton);
-            }
-        });
-        //Swipe update
-        //end swipe update
+
+        setButtonsOnClickListeners();
+
         //Start this Activity
         showButtons(View.GONE);
         frame = findViewById(R.id.frame);
@@ -158,22 +148,23 @@ public class news extends Activity implements onSomeEventListener {
     }
 
     @Override
+    public void onClickNewsListItem(int position) {
+        listTransitionToNews(position);
+    }
+
+    @Override
     public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0 ){
-            getFragmentManager().popBackStack();
-        } else {
+        if (getFragmentManager().getBackStackEntryCount() > 0 )
+            {
+                getFragmentManager().popBackStack();
+            }
+        else
+            {
             super.onBackPressed();
-        }
+            }
     }
     //
     //UI манипуляции
-
-    //Get int b: GONE,VISIBLE.
-    private void showButtons(int b)
-    {
-        button_layout.setVisibility(b);
-    }
-
     //
     // AsyncTasks
     public class start_load_cashe extends AsyncTask<Void,Void,ArrayList<_newsCh>>
@@ -187,10 +178,7 @@ public class news extends Activity implements onSomeEventListener {
         }
         @Override
         protected void onPostExecute(ArrayList<_newsCh> result) {
-            fragmentManager
-                    .beginTransaction()
-                    .add(R.id.fragment, newsList,"NewsList")
-                    .commit();
+            fragmentsManager(10);
             if(result!=null)
             {
                 GL_arrayList_TO_NEWS = result;
@@ -245,7 +233,7 @@ public class news extends Activity implements onSomeEventListener {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             start_load_screen_animation_OUT();
-            setAdapterToNewsList(GL_arrayList_TO_NEWS);
+            createNewsList(GL_arrayList_TO_NEWS);
         }
 
         @Override
@@ -270,7 +258,6 @@ public class news extends Activity implements onSomeEventListener {
             @Override
             public void onAnimationStart(Animation animation) {
             }
-
             @Override
             public void onAnimationEnd(Animation animation) {
                 isAnimationNowLoadScreen=false;
@@ -282,11 +269,12 @@ public class news extends Activity implements onSomeEventListener {
         };
         animation.setAnimationListener(animationListener);
     }
+
     protected void start_load_screen_animation_OUT()
     {
         frame.setBackgroundColor(getResources().getColor(R.color.white));
         start_scene = (ViewGroup) findViewById(R.id.view_frame);
-        animation = AnimationUtils.loadAnimation(news.this,R.anim.fadeout);
+        animation = AnimationUtils.loadAnimation(context,R.anim.fadeout);
         start_scene.startAnimation(animation);
         Animation.AnimationListener animationListener = new Animation.AnimationListener() {
             @Override
@@ -308,6 +296,7 @@ public class news extends Activity implements onSomeEventListener {
         };
         animation.setAnimationListener(animationListener);
     }
+
     private void start_circle_icon_rotate()
     {
         isAnimationNowLoadScreen=true;
@@ -330,6 +319,111 @@ public class news extends Activity implements onSomeEventListener {
             }
         };
         animation.setAnimationListener(animationListener);
+    }
+
+    private void showButtons(int b)
+    {
+        switch (b)
+        {
+            case View.VISIBLE:
+            {   button_layout.setVisibility(b);
+                break;
+            }
+            case View.GONE:
+            {
+                button_layout.setVisibility(b);
+                break;
+            }
+        }
+    }
+    private void iconAnimation(final String Tag)
+    {
+        switch (Tag)
+        {
+            case "category":
+            {
+                categoryIcon.setBackgroundResource(R.drawable.category);
+                categoryIcon.setBackgroundResource(R.drawable.cateogry_icon_animation);
+                AnimationDrawable frameAnimation = (AnimationDrawable) categoryIcon.getBackground();
+                frameAnimation.start();
+                break;
+            }
+            case "-a GONE":
+            {
+                homeIcon.setVisibility(View.GONE);
+                categoryIcon.setVisibility(View.GONE);
+                searchIcon.setVisibility(View.GONE);
+                forumIcon.setVisibility(View.GONE);
+                profileIcon.setVisibility(View.GONE);
+                break;
+            }
+        }
+    }
+
+    private void setButtonsOnClickListeners()
+    {
+        newsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentsManager(11);
+            }
+        });
+        categoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentsManager(20);
+            }
+        });
+    }
+
+    private void fragmentsManager(int fragmentId)
+    {
+        switch (fragmentId)
+        {
+            case 10:
+            {
+                currentFragment=10;
+                fragmentManager
+                        .beginTransaction()
+                        .add(R.id.fragment, newsList,"NewsList")
+                        .commit();
+                break;
+            }
+            case 11:
+            {   if(currentFragment!=11)
+                {
+                    fragmentManager
+                            .beginTransaction()
+                            .addToBackStack("NewsList")
+                            .replace(R.id.fragment, newsList, "NewsList")
+                            .commit();
+                }
+                break;
+            }
+            case 20:
+            {
+                if(currentFragment!=20)
+                {
+                    currentFragment=20;
+                    fragmentManager.beginTransaction()
+                            .addToBackStack("Category")
+                            .replace(R.id.fragment,categoryFragment,"Category")
+                            .commit();
+                    iconAnimation("category");
+                    TitleBar.setText(R.string.ActionBarCategoryButton);
+                }
+                break;
+            }
+            case 15:
+            {
+                currentFragment=15;
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragment,newsPageFragment)
+                        .addToBackStack(null)
+                        .commit();
+                break;
+            }
+        }
     }
     //
 }

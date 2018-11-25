@@ -1,5 +1,6 @@
 package com.example.root.nsb;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -16,6 +17,14 @@ public class NewsPageFragment extends Fragment {
     TextView intro;
     ImageView imageSwitcher;
     newsPage instansePage;
+    private onSomeEventListener someEventListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        someEventListener = (onSomeEventListener) activity;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState)
     {
@@ -25,7 +34,10 @@ public class NewsPageFragment extends Fragment {
         intro = rootView.findViewById(R.id.news_page_Intro);
         imageSwitcher = rootView.findViewById(R.id.news_page_ImageSwitcher);
         if(instansePage!=null)
+        {
+            someEventListener.setTitleText(instansePage.getTitle(),0);
             pageApapter(instansePage);
+        }
         return rootView;
     }
     protected void pageApapter(newsPage page)

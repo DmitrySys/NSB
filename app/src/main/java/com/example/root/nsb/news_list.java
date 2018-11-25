@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.jsoup.Jsoup;
@@ -50,19 +51,28 @@ public class news_list extends Fragment {
         swipeRefreshNewsSet();
         context=getActivity();
         if(GL_arrayList_TO_NEWS!=null)
+        {
+            someEventListener.setTitleText(null,R.string.ActionBarNewsButton);
             setNewAdapter(GL_arrayList_TO_NEWS);
+        }
         return rootView;
     }
-    public ListView setListView(newsListAdapter listAdapter,ArrayList<_newsCh> arrayList)
+
+    public void webRead(){new webReader().execute();}
+
+    public ListView setListView(ArrayList<_newsCh> arrayList)
     {
-        listView.setAdapter(listAdapter);
-        GL_arrayList_TO_NEWS=arrayList;
+        setNewAdapter(arrayList);
         return listView;
     }
+
+    public void setContext(Context context){this.context=context;}
+
     public  SwipeRefreshLayout getSwipeRefreshLayout()
     {
         return mSwipeRefreshLayout;
     }
+
     protected void swipeRefreshNewsSet()
     {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
@@ -120,8 +130,6 @@ public class news_list extends Fragment {
         }
     }
 
-    public void webRead(){new webReader().execute();}
-
     private class putCashe extends AsyncTask<ArrayList<_newsCh>,Void,Void>
     {
         @Override
@@ -138,14 +146,17 @@ public class news_list extends Fragment {
         }
     }
 
-    public void setContext(Context context){this.context=context;}
-
-    public void setNewAdapter (ArrayList<_newsCh> listnews)
+    private void setNewAdapter(ArrayList<_newsCh> listnews)
     {
         listAdapter = new newsListAdapter(context,listnews);
         GL_arrayList_TO_NEWS=new ArrayList<>();
         GL_arrayList_TO_NEWS=listnews;
         listView.setAdapter(listAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                someEventListener.onClickNewsListItem(position);
+            }
+        });
     }
-    public String getFragmentName(){return "Новости";}
 }
